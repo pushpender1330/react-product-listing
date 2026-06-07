@@ -24,8 +24,7 @@ const ProductSidebar = () => {
 
   const handleApply = async () => {
     setPage(1);
-    // getAllProducts();
-    applyFilter(parseInt(minPrice),parseInt(maxPrice));
+    applyFilter(parseInt(minPrice || "0"),parseInt(maxPrice || "100000"));
   }
 
   return (
@@ -68,7 +67,7 @@ const ProductSidebar = () => {
             >
               <input
                 type="radio"
-                checked={selectedCategory.includes(category)}
+                checked={selectedCategory === category}
                 value={category}
                 onChange={() => setSelectedCategory(category)}
                 className="h-4 w-4 accent-blue-600"
