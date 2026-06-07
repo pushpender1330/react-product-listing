@@ -15,7 +15,8 @@ interface AppContextType {
   setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
   search: string,
   setSearch: React.Dispatch<React.SetStateAction<string>>,
-  applyFilter: (min: number,max: number) => void
+  applyFilter: (min: number,max: number, selectedBrands: string[]) => void,
+  allProducts: Product[]
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -31,11 +32,13 @@ export const AppContext = createContext<AppContextType>({
   setSelectedCategory: () => {},
   search: "",
   setSearch: () => {},
-  applyFilter: () => {}
+  applyFilter: () => {},
+  allProducts: []
 });
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -63,7 +66,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  async function applyFilter(min: number, max: number) {
+  async function applyFilter(min: number, max: number, selectedBrands: string[] = []) {
     let response:{ products: Product[], total: number };
     if (!selectedCategory || selectedCategory === "all") {
       response = await fetch('https://dummyjson.com/products')
@@ -76,7 +79,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     const filterdProduct = response?.products?.filter(product=>{
       return product.price >= min && product?.price <= max;
-    })
+    })?.filter(product => selectedBrands.includes(product.brand || ""));
 
     setProducts(filterdProduct || []);
     setTotal(filterdProduct?.length || 0);
@@ -99,6 +102,17 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   }
 
+  useEffect(()=>{
+    async function getProducts() {
+        const response: { products: Product[]; total: number } | void = await fetch(
+          `https://dummyjson.com/products`,
+        ).then((res) => res.json());
+    
+        setAllProducts(response?.products || []);
+    }
+    getProducts();
+  },[])
+
   useEffect(() => {
     searchProduct();
   },[searchValue])
@@ -118,7 +132,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setSelectedCategory,
         search,
         setSearch,
-        applyFilter
+        applyFilter,
+        allProducts
       }}
     >
       {children}

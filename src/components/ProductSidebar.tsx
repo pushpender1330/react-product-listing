@@ -8,7 +8,9 @@ const ProductSidebar = () => {
   const [minPrice, setMinPrice] = useState(""); 
   const [maxPrice, setMaxPrice] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
-  const {selectedCategory, setSelectedCategory, setPage} = useContextStore();
+  const [brands, setBrands] = useState<string[]>([]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const {selectedCategory, setSelectedCategory, setPage, allProducts} = useContextStore();
   const {search, setSearch, applyFilter} = useContextStore();
 
 
@@ -20,11 +22,16 @@ const ProductSidebar = () => {
       setCategories(['all',...(categories || [])])
     }
     getCategories();
+
   },[])
+  
+  useEffect(()=>{
+    setBrands([...new Set((allProducts?.map(item => item.brand) || []).filter(item => !!item))]);
+  },[allProducts])
 
   const handleApply = async () => {
     setPage(1);
-    applyFilter(parseInt(minPrice || "0"),parseInt(maxPrice || "100000"));
+    applyFilter(parseInt(minPrice || "0"),parseInt(maxPrice || "100000"), selectedBrands);
   }
 
   return (
@@ -98,6 +105,35 @@ const ProductSidebar = () => {
             onChange={(e) => setMaxPrice(e.target.value)}
             className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
           />
+        </div>
+
+
+        <div className="mt-4">
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.15em] text-slate-500">
+            Brands
+          </h3>
+          {
+            brands?.map((brand,i) => {
+              return <div key={`${brand}-${i}`}>
+                <input 
+                  type="checkbox"
+                  value={brand}
+                  id={brand}
+                  checked={selectedBrands.includes(brand)}
+                  onChange={() => setSelectedBrands(prev => {
+                    if(prev.includes(brand)){
+                      //remove
+                      return prev.filter(item => item !== brand);
+                    }
+                    else{
+                      return [...prev,brand]
+                    }
+                  })}
+                /> 
+                <label htmlFor={brand} className="text-sm text-slate-700"> {brand}</label>
+              </div> 
+            })
+          }
         </div>
 
         <button
