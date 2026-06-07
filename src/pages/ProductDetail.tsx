@@ -72,7 +72,7 @@ const ProductDetail = () => {
             <img
               src={product.images?.[0] || product.thumbnail}
               alt={product.title}
-              className="h-[500px] object-contain"
+              className="h-125 object-contain"
             />
           </div>
 

@@ -8,7 +8,7 @@ const ProductSidebar = () => {
   const [minPrice, setMinPrice] = useState(""); 
   const [maxPrice, setMaxPrice] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
-  const {selectedCategory, setSelectedCategory, getAllProducts,setPage} = useContextStore();
+  const {selectedCategory, setSelectedCategory, setPage} = useContextStore();
   const {search, setSearch, applyFilter} = useContextStore();
 
 

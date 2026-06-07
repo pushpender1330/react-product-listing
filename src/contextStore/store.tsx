@@ -31,7 +31,7 @@ export const AppContext = createContext<AppContextType>({
   setSelectedCategory: () => {},
   search: "",
   setSearch: () => {},
-  applyFilter: (min: number,max: number) => {}
+  applyFilter: () => {}
 });
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
